@@ -1,0 +1,167 @@
+<html>
+    <head>
+        <script src="knockout-3.5.1.js"></script>
+        <script src="jquery-3.6.3.min.js"></script>
+        <script src="knockout.component.js"></script>
+        <style>    
+            * {
+                box-sizing: border-box;
+              }
+
+            .column {
+                float: left;
+                width: 50%;
+                padding: 10px;
+                height: 300px; 
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <h3> Maintain Products</h3>
+        <div class="row">
+
+            <div class="column">
+                <label>Product Number</label></br>
+                <input data-bind="value : productNumber" type="text"></input></br></br>
+                
+                <label>Product Description</label></br>
+                <input data-bind="value : productDescription" type="text"></input></br></br>
+        
+                <label>Active Product?</label></br>
+                <input data-bind="value : isActiveProduct" type="checkbox" id="myCheck">Yes</input></br></br>
+    
+                <label>Product Class</label></br>
+                <div>
+                    <input data-bind ="value:productClass" type="radio">Bicycles(100)</input>
+                    <input data-bind ="value:productClass" type="radio">Accessories(200)</input>
+                    <input data-bind ="value:productClass" type="radio">Clothing(300)</input>
+                </div>
+            </br>
+        </br>
+                <label>Unit of Measure</label></br>
+                <div data-bind="component: 'measuresList', componentBinding: { selectedMeasure: 'Boston' }">
+
+                </div>
+            </br>   
+        </br>
+              <label>Suggested Vendor</label></br>
+              <div data-bind="component: 'vendorsist', componentBinding: { selectedVendor: 'Boston' }">
+
+              </div>
+            </br>   
+            </br>
+      </div>
+         
+
+      <div class="column">
+                <label>Weight Per unit of Measure</label></br>
+                <input data-bind="value : weightsOfMeasure" type="number"></input></br></br>
+    
+                <label>List Price</label></br>
+                <input data-bind="value : listPrice" type="number"></input></br></br>
+        
+    
+                <label>Country of Origin</label></br>
+                <input data-bind="value : countryOfOrigin" type="text"></input></br></br>
+        
+                <label>Latest Revision Date</label></br>
+                <input data-bind="value: latestRevisionDate"  type="date"></input></br></br>
+    
+                <label>Long Description</label></br>
+                <textarea data-bind="value: longDescription" style="width:500px; height:100px" id="result" class="text"></textarea></br></br>
+    
+    
+            </div>
+        
+         <input data-bind="click:saveToJson" style="width: 200;background-color: blue;color: white;height: 30;margin-top: 150;" type="button"  value="Accept" />
+          
+     
+        </div>
+        
+
+        <!--Scripts -->
+
+        <script>
+                function check() {
+                    document.getElementById("myCheck").checked = true;
+                }
+
+                function uncheck() {
+                    document.getElementById("myCheck").checked = false;
+                }
+        </script>
+
+        <script id="VendorListTemplate" type="text/html">
+            <select data-bind="options:vendorsist, value: selectedVendor"></select>
+        </script>
+
+
+        <script type="text/javascript">
+          
+            kc.component('vendorsist','VendorListTemplate',function(){
+                var
+                    viewModel = {
+                        vendorsist: ko.observableArray(['sfgdfg','Francisco','Boston444','Dallas78778']),
+                        selectedVendor: ko.observable()
+                    };
+                return viewModel;
+            });
+        </script>
+
+        <script id="MeasuresListTemplate" type="text/html">
+            <select data-bind="options:measuresList, value: selectedMeasure"></select>
+        </script>
+
+
+        <script type="text/javascript">
+        
+            kc.component('measuresList','MeasuresListTemplate',function(){
+                var
+                    viewModel = {
+                        measuresList: ko.observableArray(['asgf','zgfgg','fgfh','fgfdh']),
+                        selectedMeasure: ko.observable()
+                    };
+                return viewModel;
+            });
+        </script>
+
+        <script type="text/javascript">
+            $(document).ready(function (){
+                var products = {
+                    productNumber: ko.observable("1"),
+                    productDescription: ko.observable("Product 1"),
+                    isActiveProduct:ko.observable(true),
+                    productClass: ko.observable("Product 1"),
+                    unitsOfMeasure: ko.observable(3),
+                    suggestedVendors: ko.observable("Product 1"),
+                    weightsOfMeasure: ko.observable(3),
+                    listPrice: ko.observable(3),
+                    countryOfOrigin: ko.observable("Product 1"),
+                    latestRevisionDate: ko.observable("Product 1"),
+                    longDescription: ko.observable("Product 1")
+                }
+
+                products.saveToJson = function(){
+                const jsonData = ko.toJSON(products);
+                $.ajax("http://localhost:3000/products",{
+                    type:'POST',
+                    data:jsonData,
+                    headers:{'content-type':'application/json'}
+                })
+
+                jQuery(document).ready(function($) {
+                    alert("Successfully added in prodcts.json file");
+                });
+            }
+            ko.applyBindings(products);
+            });
+        </script>
+    </body>
+</html>
